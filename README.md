@@ -1,7 +1,4 @@
 Databases
 =========
 
-Playground for a database course
-
-
-Halló Rannveig!!!
+Playground for assignments in a database course
