@@ -38,6 +38,8 @@ HasRecommended(_programme, _branch, _course)
 	branch -> Branches.name
 	course -> Courses.code
 
+Users(_id, name)
+	
 Students(_id, name, branch, programme)
 	branch -> Branches.name
 	programme -> Programmes.name
