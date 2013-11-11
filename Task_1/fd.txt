@@ -1,0 +1,12 @@
+Departments
+	name -> abbreviation
+	
+Programmes
+	name -> abbreviation
+
+Courses
+	code -> name, credits, type, prereq_course?
+
+Students
+	id -> name, branch, programme, finishedCourses, registeredCourses
+
