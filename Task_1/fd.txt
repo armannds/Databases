@@ -5,8 +5,22 @@ Programmes
 	name -> abbreviation
 
 Courses
-	code -> name, credits, type, prereq_course?
+	code -> name, credits, type, prereq_course
+	
+LimitedCourses
+	code -> name, credits, type, prereq_course, #students
 
+InQueue
+	student, limitedCourse -> timeRegistered
+	
 Students
 	id -> name, branch, programme, finishedCourses, registeredCourses
 
+Administrators
+	id -> name, role, accessCourse
+	
+Finished
+	student, course -> grade
+	
+
+	

@@ -38,7 +38,7 @@ HasRecommended(_programme, _branch, _course)
 	branch -> Branches.name
 	course -> Courses.code
 
-Users(_id, name)
+Users(_id, name) 
 	
 Students(_id, name, branch, programme)
 	branch -> Branches.name
@@ -58,6 +58,6 @@ InQueue(_student, _limitedCourse, timeRegistered)
 
 Administrators(_id, name, role)
 
-HasAccess(_id, course)
+HasAccess(_id, accessCourse)
 	id -> Administrators.id
-	course -> Courses.code
+	accessCourse -> Courses.code

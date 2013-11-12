@@ -1,7 +1,7 @@
 1. We assume that each programme needs to have at least one department and one branch needs to have at least one programme.
 2. Branches is a weak entity because from the system description, branch names are only unique within a programme.
-3. Type can not be an attribute for Courses since a course can have many types and this removes redundancy in the Courses entitiy.
+3. Type can not be an attribute for Courses since a course can have many types and this removes redundancy in the Courses entity.
 4. LimitedCourses is a subclass of Courses because we believe it to be a certain type of Courses. Also, we did not want to connect a student waiting list to every Courses,
-	only the ones the had limitid amount of registered students.
-5. We wanted to have 2 types of users; Students and Administrators. The Administrators have different roles and can change course details and registration while Students
-	can use the system to view their information about finished courses and grade.
+	only the ones the had limited amount of registered students.
+5. We wanted to have 2 types of users; Students and Administrators. The Users entity works as an abstract class, when a new user is created it is either a Student
+	or an Administrator.
