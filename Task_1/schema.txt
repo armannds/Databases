@@ -2,48 +2,44 @@ Departments(_name, abbreviation)
 
 Programmes(_name, abbreviation)
 
-Courses(_code,name,credits)
+Branches(_programme, _name)
+	programme -> Programmes.name
 
+Courses(_code,name,credits, department)
+	department -> Departments.name
+
+CourseType(_type)	
+
+Students(_id, name, programme, branch)
+	(programme, branch) -> Branches.(programme, name)
+	
 HasPrerequisites(_course, _prereq_course)
 	course -> Courses.code
 	prereq_course -> Courses.code
 
-CourseType(_type)	
-
-TypeOf(_course, _coursetype)
+TypeOf(_course, _courseType)
 	course -> Courses.code
-	coursetype -> CourseTypes.type	
+	courseType -> CourseTypes.type	
 
-LimitedCourses(_code, name, credits, #students)	
-
+LimitedCourses(_course, #students)	
+	course -> Courses.code
+	
 HasProgrammes(_department, _programme)
 	department -> Departments.name
 	programme -> Programmes.name
-
-HasBranches(_programme, _branch)
+	
+HasMandatory(_programme, _course)
 	programme -> Programmes.name
-	branch -> Branches.name
+	course -> Courses.code
 
-HasMandatory(_programme, _branch, _course)
-	programme -> Programmes.name
-	branch -> Branches.name
+BranchMandatory(_programme, _branch, _course)
+	(programme, branch) -> Branches.(programme, name)
 	course -> Courses.code
 	
-GivenBy(_department, _course)
-	department -> Departments.name
-	course -> Courses.code
-
 HasRecommended(_programme, _branch, _course)
-	programme -> Programmes.name
-	branch -> Branches.name
+	(programme, branch) -> Branches.(programme, name)
 	course -> Courses.code
-
-Users(_id, name) 
-	
-Students(_id, name, branch, programme)
-	branch -> Branches.name
-	programme -> Programmes.name
-
+ 	
 RegisteredTo(_student, _course)
 	student -> Students.id
 	course -> Courses.code
@@ -55,9 +51,3 @@ Finished(_student, _course, grade)
 InQueue(_student, _limitedCourse, timeRegistered)
 	student -> Students.id
 	limitedCourse -> LimitedCourses.code
-
-Administrators(_id, name, role)
-
-HasAccess(_id, accessCourse)
-	id -> Administrators.id
-	accessCourse -> Courses.code
