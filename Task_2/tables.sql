@@ -21,7 +21,7 @@ CREATE TABLE Courses
 (
 	code CHAR(6) PRIMARY KEY,
 	name VARCHAR(255),
-	credits CHAR(3),
+	credits REAL,
 	department REFERENCES Departments (name)
 );
 
@@ -71,7 +71,7 @@ CREATE TABLE HasMandatory
 	FOREIGN KEY (course) REFERENCES Courses (code)
 ); 
 
-CREATE TABLE BrancMandatory
+CREATE TABLE BranchMandatory
 (
 	branch VARCHAR(255),
 	programme VARCHAR(255),
@@ -94,7 +94,7 @@ CREATE TABLE HasPrerequisites
 	course CHAR(6),
 	prereqCourse CHAR(6),
 	FOREIGN KEY (course) REFERENCES Courses (code),
-	FOREIGN KEY (prereqCourse) REFERENCES Courses (code),
+	FOREIGN KEY (prereqCourse) REFERENCES Courses (code)
 );
 
 CREATE TABLE RegisteredTo
@@ -121,5 +121,5 @@ CREATE TABLE InQueue
 	limitedCourse CHAR(6),
 	timeRegistered DATE,
 	FOREIGN KEY (student) REFERENCES Students (id),
-	FOREIGN KEY (course) REFERENCES LimitedCourses (course),
+	FOREIGN KEY (limitedCourse) REFERENCES LimitedCourses (course)
 );
