@@ -28,7 +28,7 @@ WHERE S.id = R.student
 UNION
 SELECT S.id, S.name, I.limitedCourse, 'waiting' AS status
 FROM Students S, InQueue I
-WHERE S.id = I.student
+WHERE S.id = I.student;
 
 
 /*
@@ -46,7 +46,7 @@ ORDER BY S.id;
 View: UnreadMandatory
 For all students, the mandatory courses (branch and programme) they have not yet passed.
 */
-CREATE VIEW UndreadMandatory AS
+CREATE VIEW UnreadMandatory AS
 SELECT S.id, S.name, S.branch, S.programme, M.course, C.name AS coursename
 FROM Students S, HasMandatory M, Courses C
 WHERE S.programme = M.programme AND M.course = C.code AND (S.id, M.course) NOT IN (SELECT id, course FROM PassedCourses)
@@ -54,6 +54,13 @@ UNION
 SELECT S.id, S.name, S.branch, S.programme, B.course, C.name
 FROM Students S, BranchMandatory B, Courses C
 WHERE S.branch = B.branch AND S.programme = B.programme AND B.course = C.code AND (S.id, B.course) NOT IN (SELECT id, course FROM PassedCourses);
+
+CREATE VIEW CountUnreadMandatory AS
+SELECT S.id, COUNT(U.coursename) AS nrUnreadMand
+FROM Students S, UnreadMandatory U
+WHERE S.id = U.id
+GROUP BY S.id;
+
 /*
 View: PathToGraduation
 For all students, their path to graduation, i.e. a view with columns for
@@ -74,7 +81,7 @@ WHERE P.course = C.code
 GROUP BY P.id
 ORDER BY P.id;
 
-#Helper VIEW
+/*Helper VIEW - Finds all mandatory and recommended courses for each branch*/
 CREATE VIEW FindMandRecCourses AS
 SELECT S.id, B.course, C.credits
 FROM Students S, BranchMandatory B, Courses C
@@ -93,21 +100,68 @@ GROUP BY S.id;
 CREATE VIEW CountMathCourses AS
 SELECT S.id, SUM(C.credits) AS nrMathCredits
 FROM Students S, Courses C
-WHERE (S.id, C.code) IN (SELECT id, course FROM PassedCourses) AND C.code IN (SELECT T.course FROM TypeOf T WHERE type= 'Mathematical Course')
+WHERE (S.id, C.code) IN (SELECT id, course FROM PassedCourses) AND C.code IN (SELECT T.course FROM TypeOf T WHERE type = 'Mathematical Course')
 GROUP BY S.id;
 
 CREATE VIEW CountResearchCourses AS
 SELECT S.id, SUM(C.credits) AS nrResCredits
 FROM Students S, Courses C
-WHERE (S.id, C.code) IN (SELECT id, course FROM PassedCourses) AND C.code IN (SELECT T.course FROM TypeOf T WHERE type= 'Research Course')
+WHERE (S.id, C.code) IN (SELECT id, course FROM PassedCourses) AND C.code IN (SELECT T.course FROM TypeOf T WHERE type = 'Research Course')
 GROUP BY S.id;	  	   
 
 CREATE VIEW CountSeminarCourses AS
-SELECT S.id, SUM(C.credits) AS nrSemCredits
+SELECT S.id, COUNT(C.code) AS nrSemCourses
 FROM Students S, Courses C
-WHERE (S.id, C.code) IN (SELECT id, course FROM PassedCourses) AND C.code IN (SELECT T.course FROM TypeOf T WHERE type= 'Seminar Course')
+WHERE (S.id, C.code) IN (SELECT id, course FROM PassedCourses) AND C.code IN (SELECT T.course FROM TypeOf T WHERE type = 'Seminar Course')
 GROUP BY S.id;
 
+/*Helper VIEW - Counts mandatory courses for a programme that a student has finished*/
+CREATE VIEW FinishedMandatory AS
+SELECT S.id, COUNT(M.course) AS nrFinishedMandatory
+FROM Students S, HasMandatory M
+WHERE S.programme = M.programme AND (S.id, M.course) IN (SELECT id, course FROM PassedCourses)
+GROUP BY S.id;
+
+/*Helper VIEW - Counts mandatory courses for a programme*/
+CREATE VIEW CountProgrammeMand AS
+SELECT P.name, COUNT(M.course) AS nrMandCourses
+FROM Programmes P, HasMandatory M
+WHERE P.name = M.programme
+GROUP BY P.name;
+
+/*Helper VIEW - counts mandatory courses for a branch*/
+CREATE VIEW CountBranchMand AS
+SELECT A.name, A.programme, COUNT(B.Course) AS nrMandBrCourses
+FROM Branches A, BranchMandatory B
+WHERE A.programme = B.programme AND A.name = B.branch
+GROUP BY (A.name, A.programme);
+
+/*Helper VIEW - counts mandatory courses for a branch that a student has finished*/
+CREATE VIEW FinishedBranchMandatory AS
+SELECT S.id, COUNT(B.course) AS nrFinishedBrMandatory
+FROM Students S, BranchMandatory B
+WHERE S.programme = B.programme AND S.branch = B.branch AND (S.id, B.course) IN (SELECT id, course FROM PassedCourses)
+GROUP BY S.id;
+
+/*Functions that checks if a student is qualified for graduation*/
+CREATE FUNCTION CheckGraduation(IN id CHAR(10)) RETURNS CHAR(3)
+BEGIN
+IF ((SELECT A.nrMandCourse FROM CountProgrammeMand A WHERE id = A.id) = (SELECT B.nrFinishedMandatory FROM FinishedMandatory B WHERE id = B.id))
+AND IF ((SELECT C.nrMandBrCourses FROM CountBranchMand C WHERE id = C.id) = (SELECT D.nrFinishedBrMandatory FROM FinishedBrMandatory D WHERE id = D.id))
+AND IF ((SELECT E.passedMandRecCredits FROM CountMandRecCredPassed E WHERE id = E.id) >= 10)
+AND IF ((SELECT F.nrMathCredits FROM CountMathCourses F WHERE id = F.id) >= 20)
+AND IF ((SELECT G.nrResCredits FROM CountResearchCourses G WHERE id = G.id) >= 10)
+AND IF ((SELECT H.nrSemCourses FROM CountSeminarCourses H WHERE id = H.id) > 0)
+THEN RETURN 'YES';
+ELSE RETURN 'NO';
+END IF;
+END;
+  
+CREATE VIEW PathToGraduation AS
+SELECT S.id, C.passedCredits, B.passedMandRecCredits, U.nrUnreadMand, M.nrMathCredits, R.nrResCredits, X.nrSemCredits, CheckGraduation(S.id)
+FROM Students S, CountPassedCredits C, CountMandRecCredPassed B, CountUnreadMandatory U, CountMathCourses M, CountResearchCourses R, CountSeminarCourses X
+WHERE S.id = C.id AND S.id = B.id AND S.id = U.id AND S.id = M.id AND S.id = R.id AND S.id = X.id
+GROUP BY S.id, C.passedCredits, B.passedMandRecCredits, U.nrUnreadMand, M.nrMathCredits, R.nrResCredits, X.nrSemCredits;
 
 
 

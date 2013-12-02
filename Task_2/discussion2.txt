@@ -1,0 +1,7 @@
+1. We started by creating tables for our entities and relationships from database schema.
+2. We created dummy data for testing.
+3. We created helper views to help us create neccessary views regarding requirements for graduation. 
+4. When we needed to find out if a student has passed the requirements to graduate then we used the FUNCTION CheckGraduation.
+	- For this part we got an error when making a call to the function CheckGraduation. With more detailed inspection we found out that the
+	- syntax for the function parameter was wrong. However, after endless tries we were not able to get to work correctly, we tried to do as the
+	- slides describe but always got an error. 
