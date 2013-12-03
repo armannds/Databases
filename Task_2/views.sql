@@ -145,20 +145,20 @@ GROUP BY S.id;
 
 /*Using case statement*/
 CREATE VIEW CheckGraduation AS
-SELECT S.id, status,
-CASE 
-WHEN ((SELECT A.nrMandCourse FROM CountProgrammeMand A WHERE S.id = A.id) = (SELECT B.nrFinishedMandatory FROM FinishedMandatory B WHERE S.id = B.id)) /*AND 
-/*((SELECT C.nrMandBrCourses FROM CountBranchMand C WHERE S.id = C.id) = (SELECT D.nrFinishedBrMandatory FROM FinishedBrMandatory D WHERE S.id = D.id)) AND
+(SELECT S.id,
+(CASE 
+WHEN ((SELECT A.nrMandCourses FROM CountProgrammeMand A WHERE S.programme = A.name) = (SELECT B.nrFinishedMandatory FROM FinishedMandatory B WHERE S.id = B.id)) AND 
+((SELECT C.nrMandBrCourses FROM CountBranchMand C WHERE S.branch = C.name AND S.programme = C.programme) = (SELECT D.nrFinishedBrMandatory FROM FinishedBranchMandatory D WHERE S.id = D.id)) AND
 ((SELECT E.passedMandRecCredits FROM CountMandRecCredPassed E WHERE S.id = E.id) >= 10) AND 
 ((SELECT F.nrMathCredits FROM CountMathCourses F WHERE S.id = F.id) >= 20) AND
 ((SELECT G.nrResCredits FROM CountResearchCourses G WHERE S.id = G.id) >= 10) AND
-((SELECT H.nrSemCourses FROM CountSeminarCourses H WHERE S.id = H.id) > 0) */
+((SELECT H.nrSemCourses FROM CountSeminarCourses H WHERE S.id = H.id) > 0) 
 THEN 
-status ='Yes' 
+'Yes' 
 ELSE 
-status ='No'
-END
-FROM Students S;
+'No'
+END) "status"
+FROM Students S);
 
 /*Functions that checks if a student is qualified for graduation*/
 CREATE FUNCTION CheckGraduation(IN id CHAR(10)) RETURNS CHAR(3)
