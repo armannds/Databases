@@ -159,26 +159,12 @@ ELSE
 'No'
 END) "status"
 FROM Students S);
-
-/*Functions that checks if a student is qualified for graduation*/
-CREATE FUNCTION CheckGraduation(IN id CHAR(10)) RETURNS CHAR(3)
-BEGIN
-IF ((SELECT A.nrMandCourse FROM CountProgrammeMand A WHERE id = A.id) = (SELECT B.nrFinishedMandatory FROM FinishedMandatory B WHERE id = B.id))
-AND IF ((SELECT C.nrMandBrCourses FROM CountBranchMand C WHERE id = C.id) = (SELECT D.nrFinishedBrMandatory FROM FinishedBrMandatory D WHERE id = D.id))
-AND IF ((SELECT E.passedMandRecCredits FROM CountMandRecCredPassed E WHERE id = E.id) >= 10)
-AND IF ((SELECT F.nrMathCredits FROM CountMathCourses F WHERE id = F.id) >= 20)
-AND IF ((SELECT G.nrResCredits FROM CountResearchCourses G WHERE id = G.id) >= 10)
-AND IF ((SELECT H.nrSemCourses FROM CountSeminarCourses H WHERE id = H.id) > 0)
-THEN RETURN 'YES';
-ELSE RETURN 'NO';
-END IF;
-END;
   
 CREATE VIEW PathToGraduation AS
-SELECT S.id, C.passedCredits, B.passedMandRecCredits, U.nrUnreadMand, M.nrMathCredits, R.nrResCredits, X.nrSemCredits, CheckGraduation(S.id)
-FROM Students S, CountPassedCredits C, CountMandRecCredPassed B, CountUnreadMandatory U, CountMathCourses M, CountResearchCourses R, CountSeminarCourses X
-WHERE S.id = C.id AND S.id = B.id AND S.id = U.id AND S.id = M.id AND S.id = R.id AND S.id = X.id
-GROUP BY S.id, C.passedCredits, B.passedMandRecCredits, U.nrUnreadMand, M.nrMathCredits, R.nrResCredits, X.nrSemCredits;
+SELECT S.id, C.passedCredits, B.passedMandRecCredits, U.nrUnreadMand, M.nrMathCredits, R.nrResCredits, X.nrSemCourses, G."status"
+FROM Students S, CountPassedCredits C, CountMandRecCredPassed B, CountUnreadMandatory U, CountMathCourses M, CountResearchCourses R, CountSeminarCourses X, CheckGraduationTestTest G
+WHERE S.id = C.id AND S.id = B.id AND S.id = U.id AND S.id = M.id AND S.id = R.id AND S.id = X.id AND S.id = G.id
+GROUP BY S.id, C.passedCredits, B.passedMandRecCredits, U.nrUnreadMand, M.nrMathCredits, R.nrResCredits, X.nrSemCourses;
 
 
 
