@@ -42,10 +42,6 @@ FROM Students S, Finished F
 WHERE S.id = F.student AND F.grade NOT IN ('U')
 ORDER BY S.id; 
 
-/*
-View: UnreadMandatory
-For all students, the mandatory courses (branch and programme) they have not yet passed.
-*/
 CREATE VIEW UnreadMandatory AS
 SELECT S.id, S.name, S.branch, S.programme, M.course, C.name AS coursename
 FROM Students S, HasMandatory M, Courses C
@@ -61,19 +57,6 @@ FROM Students S, UnreadMandatory U
 WHERE S.id = U.id
 GROUP BY S.id;
 
-/*
-View: PathToGraduation
-For all students, their path to graduation, i.e. a view with columns for
-
-    the number of credits they have passed.
-    the number of branch-specific mandatory and recommended credits they have passed.
-    the number of mandatory courses they have yet to pass (branch or programme).
-    the number of credits they have passed in courses that are classified as math courses.
-    the number of credits they have passed courses that are classified as research courses.
-    the number of credits they have passed courses that are classified as seminar courses.
-    whether or not they qualify for graduation.
-
-*/
 CREATE VIEW CountPassedCredits AS
 SELECT P.id, SUM(C.credits) AS passedCredits
 FROM PassedCourses P, Courses C
@@ -143,7 +126,6 @@ FROM Students S, BranchMandatory B
 WHERE S.programme = B.programme AND S.branch = B.branch AND (S.id, B.course) IN (SELECT id, course FROM PassedCourses)
 GROUP BY S.id;
 
-/*Using case statement*/
 CREATE VIEW CheckIfValidForGraduation AS
 (SELECT S.id,
 (CASE 
@@ -161,12 +143,6 @@ END) "status"
 FROM Students S);
   
 CREATE VIEW PathToGraduation AS
-SELECT S.id, C.passedCredits, B.passedMandRecCredits, U.nrUnreadMand, M.nrMathCredits, R.nrResCredits, X.nrSemCourses, G."status"
-FROM Students S, CountPassedCredits C, CountMandRecCredPassed B, CountUnreadMandatory U, CountMathCourses M, CountResearchCourses R, CountSeminarCourses X, CheckGraduationTestTest G
-WHERE S.id = C.id AND S.id = B.id AND S.id = U.id AND S.id = M.id AND S.id = R.id AND S.id = X.id AND S.id = G.id
-GROUP BY S.id, C.passedCredits, B.passedMandRecCredits, U.nrUnreadMand, R.nrResCredits, X.nrSemCourses;
-
-
 SELECT S.id, NVL(C.passedCredits,0) AS passedCredits, NVL(B.passedMandRecCredits,0) AS passedMandRecCredits, NVL(U.nrUnreadMand,0) AS nrUnreadMand, NVL(M.nrMathCredits,0) AS nrMathCredits, NVL(R.nrResCredits,0) AS nrResCredits, NVL(X.nrSemCourses,0) AS nrSemCourses, G."status"
 FROM Students S
 LEFT OUTER JOIN CountPassedCredits C
