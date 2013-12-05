@@ -144,7 +144,7 @@ WHERE S.programme = B.programme AND S.branch = B.branch AND (S.id, B.course) IN 
 GROUP BY S.id;
 
 /*Using case statement*/
-CREATE VIEW CheckGraduation AS
+CREATE VIEW CheckIfValidForGraduation AS
 (SELECT S.id,
 (CASE 
 WHEN ((SELECT A.nrMandCourses FROM CountProgrammeMand A WHERE S.programme = A.name) = (SELECT B.nrFinishedMandatory FROM FinishedMandatory B WHERE S.id = B.id)) AND 
@@ -164,8 +164,22 @@ CREATE VIEW PathToGraduation AS
 SELECT S.id, C.passedCredits, B.passedMandRecCredits, U.nrUnreadMand, M.nrMathCredits, R.nrResCredits, X.nrSemCourses, G."status"
 FROM Students S, CountPassedCredits C, CountMandRecCredPassed B, CountUnreadMandatory U, CountMathCourses M, CountResearchCourses R, CountSeminarCourses X, CheckGraduationTestTest G
 WHERE S.id = C.id AND S.id = B.id AND S.id = U.id AND S.id = M.id AND S.id = R.id AND S.id = X.id AND S.id = G.id
-GROUP BY S.id, C.passedCredits, B.passedMandRecCredits, U.nrUnreadMand, M.nrMathCredits, R.nrResCredits, X.nrSemCourses;
+GROUP BY S.id, C.passedCredits, B.passedMandRecCredits, U.nrUnreadMand, R.nrResCredits, X.nrSemCourses;
 
 
-
-
+SELECT S.id, NVL(C.passedCredits,0) AS passedCredits, NVL(B.passedMandRecCredits,0) AS passedMandRecCredits, NVL(U.nrUnreadMand,0) AS nrUnreadMand, NVL(M.nrMathCredits,0) AS nrMathCredits, NVL(R.nrResCredits,0) AS nrResCredits, NVL(X.nrSemCourses,0) AS nrSemCourses, G."status"
+FROM Students S
+LEFT OUTER JOIN CountPassedCredits C
+ON S.id = C.id
+LEFT OUTER JOIN CountMandRecCredPassed B
+ON S.id = B.id
+LEFT OUTER JOIN CountUnreadMandatory U
+ON S.id = U.id
+LEFT OUTER JOIN CountMathCourses M
+ON S.id = M.id
+LEFT OUTER JOIN CountResearchCourses R
+ON S.id = R.id
+LEFT OUTER JOIN CountSeminarCourses X
+ON S.id = X.id
+LEFT OUTER JOIN CheckIfValidForGraduation  G
+ON S.id = G.id;
