@@ -101,6 +101,7 @@ CREATE TABLE RegisteredTo
 (
 	student CHAR(10),
 	course CHAR(6),
+	CONSTRAINT register PRIMARY KEY (student, course),
 	FOREIGN KEY (student) REFERENCES Students (id),
 	FOREIGN KEY (course) REFERENCES Courses (code)
 );
@@ -119,7 +120,8 @@ CREATE TABLE InQueue
 (
 	student CHAR(10),
 	limitedCourse CHAR(6),
-	timeRegistered DATE,
+	timeRegistered TIMESTAMP,
+	CONSTRAINT inqueue PRIMARY KEY (student, limitedCourse),
 	FOREIGN KEY (student) REFERENCES Students (id),
 	FOREIGN KEY (limitedCourse) REFERENCES LimitedCourses (course)
 );

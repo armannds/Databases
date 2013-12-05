@@ -71,12 +71,16 @@ INSERT INTO Courses
 	VALUES ('TDA016','Project Management',7.5,'Department of Computing Science');
 INSERT INTO Courses
 	VALUES ('TDA017','Medicine for the Engineering',7.5,'Signals and Systems Department');
+INSERT INTO Courses
+	VALUES ('TDA018','Software Project Evolution',7.5,'Department of Computing Science');
 
 
 INSERT INTO LimitedCourses
 	VALUES ('TDA005', 60);
 INSERT INTO LimitedCourses
 	VALUES ('TDA008', 30);
+INSERT INTO LimitedCourses
+	VALUES ('TDA018', 3);
 
 
 INSERT INTO CourseTypes
