@@ -169,4 +169,3 @@ GROUP BY S.id, C.passedCredits, B.passedMandRecCredits, U.nrUnreadMand, M.nrMath
 
 
 
-
