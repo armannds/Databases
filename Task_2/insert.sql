@@ -99,6 +99,14 @@ INSERT INTO TypeOf
 	VALUES ('TDA011', 'Research Course');
 INSERT INTO TypeOf
 	VALUES ('TDA011', 'Seminar Course');
+INSERT INTO TypeOf
+	VALUES('TDA013','Mathematical Course');	
+INSERT INTO TypeOf
+	VALUES('TDA001','Research Course');	
+INSERT INTO TypeOf
+	VALUES('TDA002','Seminar Course');	
+INSERT INTO TypeOf
+	VALUES('TDA005','Mathematical Course');	
 
 
 INSERT INTO Students
@@ -113,7 +121,8 @@ INSERT INTO Students
 	VALUES ('104','Johan Lars Hansson','Interaction Design','Automotive Engineering Programme');
 INSERT INTO Students
 	VALUES ('105','Jack Bauer','Software Engineering','Computer Science and Engineering Programme');
-
+INSERT INTO Students
+	VALUES ('106','Emma Johansson','Software Engineering','Computer Science and Engineering Programme');
 
 INSERT INTO HasProgrammes
 	VALUES ('Department of Computing Science','Computer Science and Engineering Programme');
@@ -157,7 +166,7 @@ INSERT INTO	RegisteredTo
 INSERT INTO	RegisteredTo
 	VALUES ('102','TDA012');
 INSERT INTO	RegisteredTo
-	VALUES ('104','TDA011');
+	VALUES ('104','TDA011');	
 
 INSERT INTO	Finished
 	VALUES ('100','TDA001','3');
@@ -177,7 +186,20 @@ INSERT INTO Finished
 	VALUES ('104', 'TDA004','4');
 INSERT INTO Finished
 	VALUES ('104', 'TDA007','3');
-
+INSERT INTO Finished
+	VALUES ('106', 'TDA001','4');
+INSERT INTO Finished
+	VALUES ('106', 'TDA013','3');
+INSERT INTO Finished
+	VALUES ('106', 'TDA002','5');
+INSERT INTO Finished
+	VALUES ('106', 'TDA007','5');
+INSERT INTO Finished
+	VALUES ('106', 'TDA011','3');
+INSERT INTO Finished
+	VALUES ('106', 'TDA004','4');
+INSERT INTO Finished
+	VALUES ('106', 'TDA005','4');
 
 INSERT INTO InQueue
 VALUES ('100', 'TDA005', '2013-08-08');

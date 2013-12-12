@@ -5,19 +5,19 @@ FROM Students
 ORDER BY id;
 
 CREATE OR REPLACE VIEW FinishedCourses AS
-SELECT S.id, S.name, F.course, F.grade
-FROM Finished F, Students S
-WHERE F.student = S.id
+SELECT S.id, S.name, F.course, C.name AS coursename, C.credits,  F.grade
+FROM Finished F, Students S, Courses C
+WHERE F.student = S.id AND C.code = F.course
 ORDER BY S.id;
 
 CREATE OR REPLACE VIEW Registration AS
-SELECT S.id, S.name, R.course, 'registered' AS status
-FROM Students S, RegisteredTo R
-WHERE S.id = R.student
+SELECT S.id, S.name, R.course AS course, C.name AS coursename, 'registered' AS status
+FROM Students S,RegisteredTo R, Courses C
+WHERE S.id = R.student AND R.course = C.code
 UNION
-SELECT S.id, S.name, I.limitedCourse, 'waiting' AS status
-FROM Students S, InQueue I
-WHERE S.id = I.student;
+SELECT S.id, S.name, I.limitedCourse AS course, C.name AS coursename, 'waiting' AS status
+FROM Students S, InQueue I, Courses C
+WHERE S.id = I.student AND I.limitedCourse = C.code;
 
 CREATE OR REPLACE VIEW PassedCourses AS
 SELECT S.id, S.name, F.course, F.grade
@@ -126,7 +126,9 @@ END) "status"
 FROM Students S);
   
 CREATE OR REPLACE VIEW PathToGraduation AS
-SELECT S.id, NVL(C.passedCredits,0) AS passedCredits, NVL(B.passedMandRecCredits,0) AS passedMandRecCredits, NVL(U.nrUnreadMand,0) AS nrUnreadMand, NVL(M.nrMathCredits,0) AS nrMathCredits, NVL(R.nrResCredits,0) AS nrResCredits, NVL(X.nrSemCourses,0) AS nrSemCourses, G."status"
+SELECT S.id, NVL(C.passedCredits,0) AS passedCredits, NVL(B.passedMandRecCredits,0) AS passedMandRecCredits, 
+	NVL(U.nrUnreadMand,0) AS nrUnreadMand, NVL(M.nrMathCredits,0) AS nrMathCredits, NVL(R.nrResCredits,0) AS nrResCredits, 
+	NVL(X.nrSemCourses,0) AS nrSemCourses, G."status" AS status
 FROM Students S
 LEFT OUTER JOIN NumberPassedCredits C
 ON S.id = C.id

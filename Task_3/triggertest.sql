@@ -20,3 +20,8 @@ INSERT INTO Registration (id, course) VALUES ('103','TDA019');
 
 /* A Student tries to register to a course he is already in - error message will appear*/
 INSERT INTO Registration (id, course) VALUES ('101','TDA018');
+
+/* Remove student that is waiting to be registered for a course*/
+INSERT INTO Registration (id, course) VALUES ('105','TDA018');
+DELETE FROM Registration WHERE id = '105' AND course = 'TDA018';
+
