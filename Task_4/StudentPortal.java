@@ -4,7 +4,6 @@ import java.io.*;  // Reading user input.
 public class StudentPortal {
 	
 	private static String pRegistered = "registered";
-	private static String pWaiting = "waiting";
 	/* This is the driving engine of the program. It parses the
 	 * command-line arguments and calls the appropriate methods in
 	 * the other classes.
@@ -82,7 +81,8 @@ public class StudentPortal {
 		try{
         	ResultSet infoSet = stmt.executeQuery("SELECT name, programme, branch " + "FROM StudentsFollowing " +
     			" WHERE id = " + student);
-
+        	
+        	infoSet.next();
         	System.out.println("Information for student " + student);
 	        System.out.println("-----------------------------------");
 	        System.out.println("Name: " + infoSet.getString(1));
@@ -91,7 +91,7 @@ public class StudentPortal {
 
         }catch (SQLException e) {
             System.out.println("ERROR! Student information for "+ student +" does not exist. Exiting applictaion");
-            System.exit(1);
+            return;
         }
 	   
 	    //Fetching information about finished courses.
@@ -108,7 +108,7 @@ public class StudentPortal {
 
         }catch (SQLException e) {
             System.out.println("ERROR! " + e.getMessage());
-            System.exit(1);
+            return;
         }
 
 	    //Fetching information about registered courses.
@@ -125,7 +125,7 @@ public class StudentPortal {
 
         }catch (SQLException e) {
             System.out.println("ERROR! " + e.getMessage());
-            System.exit(1);
+            return;
         }
      
 	    //Fetching information about waiting courses.
@@ -148,17 +148,18 @@ public class StudentPortal {
 	    try{
         	ResultSet infoSet = stmt.executeQuery("SELECT nrSemCourses, nrMathCredits, nrResCredits, passedCredits, status" +
         		" FROM PathToGraduation" + " WHERE id = " + student);
-
+        	
+        	infoSet.next();
         	System.out.println();
 	    	System.out.println("Seminar courses taken: " + infoSet.getString(1));
 	    	System.out.println("Math credits taken: " + infoSet.getString(2));
 	    	System.out.println("Research credits taken: " + infoSet.getString(3));
 	    	System.out.println("Total credits taken: " + infoSet.getString(4));
-	    	System.out.println("Fulfils the requriements for graduation:" + infoSet.getString(5));
-
+	    	System.out.println("Fulfils the requriements for graduation: " + infoSet.getString(5));
+	    	System.out.println();
         }catch (SQLException e) {
             System.out.println("ERROR! " + e.getMessage());
-            System.exit(1);
+            return;
         }
     }
 
@@ -173,20 +174,20 @@ public class StudentPortal {
         }
 
         try{
-        	stmt.executeUpdate("INSERT INTO Registration (id, course)" + " VALUES ('" + student + "', '" + course + "'')" );	
+        	stmt.executeUpdate("INSERT INTO Registration (id, course)" + " VALUES ('" + student + "', '" + course + "')" );	
         }catch (SQLException e) {
-        	System.out.println("ERROR! " + e.getMessage());
-            return;
+        	System.out.println("ERROR1! " + e.getMessage());
+        	return;          
         }
-
+        
         //Check to see where the student was registered
         try{
         	ResultSet mySet = stmt.executeQuery("SELECT status " + " FROM Registration " + " WHERE id = " + student + 
         		" AND course = '" + course + "'");
 
                         if (!mySet.next()) {
-                                System.out.println("Failed to register for course " + course + ". Exiting application");
-                                System.exit(1);
+                                System.out.println("Failed to register for course.");
+                                return;
                         } else {
                                 // The course was not full 
                                 if (pRegistered.equals(mySet.getString(1))) {
@@ -194,17 +195,17 @@ public class StudentPortal {
                                 } else {
                                         // The course was full and the student was put in queue
                                         ResultSet subSet = stmt.executeQuery("SELECT position " + " FROM CourseQueuePositions " 
-                                        	+ " WHERE id = '" + student + "' AND course = '" + course + "'");
+                                        	+ " WHERE student = '" + student + "' AND limitedCourse = '" + course + "'");
                                         subSet.next();
-                                        System.out.println("The course " + course + " was full and you have been put in a waiting queue for" +
-                                        	" the course. Your number in the queue is: " + mySet.getString(1));
+                                        System.out.println("The course was full and you have been put in a waiting queue for" +
+                                        	" the course. Your number in the queue is: " + subSet.getString(1));
                                 }                                
                         }
 
         }catch (SQLException e) {
-        	System.out.println("ERROR! " + e.getMessage());
-            return;
-        }  
+        	System.out.println("ERROR2! " + e.getMessage());
+        	return;
+        } 
 
 	}
 
@@ -217,6 +218,43 @@ public class StudentPortal {
             System.out.println("ERROR! Could not connect to database. Exiting applictaion");
             System.exit(1);
         }
+		
+		try{
+			//Check if the student is registered to a course
+			ResultSet mySet = stmt.executeQuery("SELECT * " + " FROM Registration" + " WHERE id = " + student + 
+				" AND course = '" + course + "'");
+			if(!mySet.next()){
+				System.out.println("You can not unregister from a course that you are not registered to!");
+				return;
+			}else{
+				try{
+					stmt.executeUpdate("DELETE FROM Registration " + " WHERE id = " + student + 
+						" AND course = '" + course + "'");
+				}catch (SQLException e) {
+					System.out.println("ERROR1! " + e.getMessage());
+					return;
+				}
+			}
+		}catch (SQLException e) {
+            System.out.println("ERROR2! " + e.getMessage());
+            return;
+        }
+		//Check if student was successfully unregistered from a course
+		
+		try{
+			ResultSet mySet = stmt.executeQuery("SELECT * " + " FROM Registration" + " WHERE id = " + student + 
+				" AND course = '" + course + "'");
+			if(mySet.next()){ 
+				System.out.println("Failed to unregister student from the course");
+				return;
+			}else{
+				System.out.println("The student was successfully unregistered from the course");
+			}
+		}
+		catch (SQLException e) {
+			System.out.println("ERROR3! " + e.getMessage());
+			return;
+		}
+		
 	}
-
 }
