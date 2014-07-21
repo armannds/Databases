@@ -1,0 +1,3 @@
+1. We started by creating tables for our entities and relationships from database schema.
+2. We created dummy data for testing.
+3. We created helper views to help us create neccessary views regarding requirements for graduation. 

@@ -1,0 +1,21 @@
+1.
+	a. show information 105
+	b. show information 106
+2. 
+	a. register TDA017 - SELECT * FROM RegisteredTo
+	b. register TDA017 - -||-
+	c. unregister TDA017 - -||-
+	d. unregister TDA017
+	e. register TDA003
+3.
+	a. register TDA018 - SELECT * FROM InQueue
+	b. unregister TDA018 - -||-
+	c. switch to 101
+	d. 
+	   register 101 to TDA018
+	   register 102 to TDA018
+	   register 103 to TDA018
+	   INSERT INTO Registration (id, course) VALUES ('106','TDA018'); 
+	   INSERT INTO Registration (id, course) VALUES ('105','TDA018');
+	   unregister 101 from TDA018
+

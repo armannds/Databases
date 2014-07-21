@@ -1,0 +1,29 @@
+Departments
+	name -> abbreviation
+	abbreviation -> name
+	
+Programmes
+	name -> abbreviation
+	abbreviation -> name
+	
+Courses
+	code -> name, credits, type, prereq_course
+	
+LimitedCourses
+	code -> name, credits, type, prereq_course, #students
+
+InQueue
+	student, limitedCourse -> timeRegistered
+	limitedCourse, timeRegistered -> student
+	
+Students
+	id -> name, branch, programme, finishedCourses, registeredCourses
+
+Administrators
+	id -> name, role, accessCourse
+	
+Finished
+	student, course -> grade
+	
+
+	

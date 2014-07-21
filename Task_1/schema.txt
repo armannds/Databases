@@ -1,0 +1,53 @@
+Departments(_name, abbreviation)
+
+Programmes(_name, abbreviation)
+
+Branches(_programme, _name)
+	programme -> Programmes.name
+
+Courses(_code,name,credits, department)
+	department -> Departments.name
+
+CourseType(_type)	
+
+Students(_id, name, programme, branch)
+	(programme, branch) -> Branches.(programme, name)
+	
+HasPrerequisites(_course, _prereq_course)
+	course -> Courses.code
+	prereq_course -> Courses.code
+
+TypeOf(_course, _courseType)
+	course -> Courses.code
+	courseType -> CourseTypes.type	
+
+LimitedCourses(_course, #students)	
+	course -> Courses.code
+	
+HasProgrammes(_department, _programme)
+	department -> Departments.name
+	programme -> Programmes.name
+	
+HasMandatory(_programme, _course)
+	programme -> Programmes.name
+	course -> Courses.code
+
+BranchMandatory(_programme, _branch, _course)
+	(programme, branch) -> Branches.(programme, name)
+	course -> Courses.code
+	
+HasRecommended(_programme, _branch, _course)
+	(programme, branch) -> Branches.(programme, name)
+	course -> Courses.code
+ 	
+RegisteredTo(_student, _course)
+	student -> Students.id
+	course -> Courses.code
+	
+Finished(_student, _course, grade)
+	student -> Students.id
+	course -> Courses.code
+
+InQueue(_student, _limitedCourse, timeRegistered)
+	student -> Students.id
+	limitedCourse -> LimitedCourses.code
